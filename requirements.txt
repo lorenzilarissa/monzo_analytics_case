@@ -1,2 +1,4 @@
 dbt-core
 dbt-bigquery
+sqlfluff==3.0.0
+sqlfluff-templater-dbt==3.0.0
