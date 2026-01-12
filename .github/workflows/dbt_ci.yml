@@ -1,0 +1,50 @@
+name: dbt CI - Code Quality & Integrity
+
+on:
+  pull_request:
+    branches: [ "main", "master" ]
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  code-quality:
+    name: Lint & Parse check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install dbt-bigquery sqlfluff sqlfluff-templater-dbt
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: dbt Parse (Check Project Integrity)
+        # Cria um perfil fake apenas para o dbt conseguir ler os arquivos sem conectar no BQ
+        run: |
+          mkdir -p ~/.dbt
+          echo "monzo_analytics_case:" > ~/.dbt/profiles.yml
+          echo "  target: dev" >> ~/.dbt/profiles.yml
+          echo "  outputs:" >> ~/.dbt/profiles.yml
+          echo "    dev:" >> ~/.dbt/profiles.yml
+          echo "      type: bigquery" >> ~/.dbt/profiles.yml
+          echo "      method: service-account" >> ~/.dbt/profiles.yml
+          echo "      project: dummy-project" >> ~/.dbt/profiles.yml
+          echo "      dataset: dummy_dataset" >> ~/.dbt/profiles.yml
+          echo "      threads: 1" >> ~/.dbt/profiles.yml
+          echo "      keyfile: ./dummy.json" >> ~/.dbt/profiles.yml
+          touch dummy.json
+          dbt parse
+
+      - name: Lint with SQLFluff
+        # Analisa apenas a pasta models para garantir padronização
+        run: |
+          sqlfluff lint models --dialect bigquery

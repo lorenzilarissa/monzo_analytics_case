@@ -30,7 +30,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
 models:
-  monzo_analytics:
-    # Config indicated by + and applies to all files under models/example/
-    example:
-      +materialized: view
+  monzo_analytics_case:
+    marts:
+      fct:
+        +materialized: table
+        +partition_by:
+          field: reference_date
+          data_type: date
+          granularity: day
