@@ -1,5 +1,5 @@
 with 
-    current_status as (
+    base_status as (
         select *
         from {{ ref('int_account_status_history') }}
     )
@@ -11,7 +11,7 @@ with
             , current_status
             , previous_event_type
             , is_currently_open
-        from current_status
+        from base_status
     )
 
 select *
