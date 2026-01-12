@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: int_user_daily_activity
+    description: "Intermediate model that calculates rolling 7-day user activity. It uses a date spine to ensure no gaps in the timeline for each user since their account creation."
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user."
+        tests:
+          - not_null
+
+      - name: reference_date
+        description: "The specific date in the calendar spine for which activity is being calculated."
+        tests:
+          - not_null
+
+      - name: total_tx_7d
+        description: "The cumulative sum of transactions for the user over the last 7 days (rolling window), including the reference date."
+
+      - name: is_7d_active
+        description: "Boolean flag indicating if the user had at least one transaction in the last 7 days."
+        tests:
+          - not_null
