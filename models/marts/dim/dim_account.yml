@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: dim_account
+    description: >
+      Final dimension table providing a single point of truth for account statuses. 
+      It is the primary link between account-level attributes and user-level metrics.
+    columns:
+      - name: account_id
+        description: "Unique identifier for the account (Natural Key)."
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        description: "Foreign Key linking the account to its owner (User)."
+        tests:
+          - not_null
+          # Este teste valida que o relacionamento entre tabelas é íntegro
+          - relationships:
+              to: ref('stg_accounts_created')
+              field: user_id
+
+      - name: last_event_at
+        description: "Timestamp of the most recent status change."
+
+      - name: current_status
+        description: "The current status of the account (OPEN, CLOSED, or REOPENED)."
+
+      - name: previous_event_type
+        description: "The status immediately preceding the current one (used for churn analysis)."
+
+      - name: is_currently_open
+        description: "Boolean flag indicating if the account is presently in an active state."
+        tests:
+          - not_null

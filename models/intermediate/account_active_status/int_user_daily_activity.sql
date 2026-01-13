@@ -35,25 +35,30 @@ date_spine as (
     from {{ ref('stg_account_transactions') }} as transactions
     inner join {{ ref('stg_accounts_created') }} as created
         on transactions.account_id = created.account_id
-    group by 1, 2
+    group by
+        created.user_id
+        , transactions.transaction_date
 )
 
 , activity_rolling as (
     select
         user_grid.user_id
         , user_grid.calendar_date
-        , sum(coalesce(user_transactions_daily.transactions_count, 0)) over (
-            partition by user_grid.user_id
-            order by unix_date(user_grid.calendar_date)
-            range between 6 preceding
-            and current row
+        , sum(
+            coalesce(
+                user_transactions_daily.transactions_count
+                , 0
+            )
+        ) over (
+                partition by user_grid.user_id
+                order by unix_date(user_grid.calendar_date)
+                range between 6 preceding
+                and current row
         ) as total_tx_7d
     from user_grid
     left join user_transactions_daily
-        on
-            user_grid.user_id = user_transactions_daily.user_id
-            and user_grid.calendar_date
-            = user_transactions_daily.transaction_date
+        on user_grid.user_id = user_transactions_daily.user_id
+                and user_grid.calendar_date = user_transactions_daily.transaction_date
 )
 
 , final as (

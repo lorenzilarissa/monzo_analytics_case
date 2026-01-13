@@ -28,6 +28,8 @@ source as (
     from renamed
 )
 
-select *
+select
+    *
+    except (rn)
 from dedup
 where rn = 1

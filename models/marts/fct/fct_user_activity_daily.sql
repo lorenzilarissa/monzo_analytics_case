@@ -5,7 +5,10 @@ daily_activity as (
 
 , final as (
     select
-        {{ dbt_utils.generate_surrogate_key(['user_id', 'reference_date']) }} as activity_id
+        {{ dbt_utils.generate_surrogate_key([
+            'user_id'
+            , 'reference_date'
+        ]) }} as activity_id
         , user_id
         , reference_date
         , total_tx_7d
