@@ -44,7 +44,7 @@ In addition to native dbt tests, a manual audit framework was implemented in `/a
 
 ### 1. Clone and access the repository
 ```bash
-git clone [repository-url]
+git clone https://github.com/lorenzilarissa/monzo_analytics_case
 cd monzo_analytics_case
 ```
 ### 2. Configure virtual environment and dependencies
