@@ -4,13 +4,18 @@ models:
   - name: int_account_status_history
     description: >
       Consolidates the lifecycle of each account by unioning creation, closure, and reopening events.
-      It identifies the current state of the account to determine eligibility for activity metrics.
+      It recovers the user_id for all events to enable user-level relationship mapping.
     columns:
       - name: account_id
         description: The unique identifier of the account.
         tests:
           - not_null
           - unique
+
+      - name: user_id
+        description: The unique identifier of the user who owns the account.
+        tests:
+          - not_null
 
       - name: current_status
         description: The most recent event type recorded for this account (OPEN, CLOSED, REOPENED).
@@ -19,7 +24,7 @@ models:
               values: ['OPEN', 'CLOSED', 'REOPENED']
 
       - name: is_currently_open
-        description: Boolean flag indicating if the account is in an active contract state (OPEN or REOPENED).
+        description: Boolean flag indicating if the account is in an active state (OPEN or REOPENED).
         tests:
           - not_null
 

@@ -12,7 +12,7 @@ source as (
     select
         cast(account_id_hashed as string) as account_id
         , cast(user_id_hashed as string) as user_id
-        , cast(account_type as string) as account_type
+        , cast(coalesce(account_type, 'unknown') as string) as account_type
         , cast(created_ts as timestamp) as created_at
     from source
 )
@@ -30,6 +30,8 @@ source as (
     from renamed
 )
 
-select *
+select
+    *
+    except (rn)
 from dedup
 where rn = 1

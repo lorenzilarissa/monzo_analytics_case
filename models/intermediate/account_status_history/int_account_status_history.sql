@@ -65,17 +65,22 @@ account_created as (
 
 , final as (
     select
-        account_id
-        , event_at as last_event_at
-        , event_type as current_status
-        , previous_event_type
-        , coalesce(event_type
-        in (
-            'OPEN'
-            , 'REOPENED'
-        ), false) as is_currently_open
+        status_window.account_id
+        , accounts_created.user_id
+        , status_window.event_at as last_event_at
+        , status_window.event_type as current_status
+        , status_window.previous_event_type
+        , coalesce(
+            status_window.event_type
+            in (
+                'OPEN'
+                , 'REOPENED'
+            ), false
+        ) as is_currently_open
     from status_window
-    where event_rank = 1
+    left join {{ ref('stg_accounts_created') }} as accounts_created
+        on status_window.account_id = accounts_created.account_id
+    where status_window.event_rank = 1
 )
 
 select *

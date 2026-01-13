@@ -7,6 +7,7 @@ base_status as (
 , final as (
     select
         account_id
+        , user_id
         , last_event_at
         , current_status
         , previous_event_type
